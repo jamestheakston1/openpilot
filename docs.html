@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IssuePilot Documentation</title>
+    <title>OpenPilot Documentation</title>
     <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
@@ -39,7 +39,7 @@
         </button>
 
         <div id="status-container" class="flex items-center text-sm font-medium text-gray-600 ml-auto">
-            <span class="hidden sm:inline mr-2">IssuePilot Status:</span>
+            <span class="hidden sm:inline mr-2">OpenPilot Status:</span>
             <div id="github-status" class="flex items-center space-x-1 p-1 px-3 rounded-full bg-gray-200">
                 <i id="status-icon" data-feather="loader" class="w-4 h-4 mr-1 animate-spin"></i>
                 <span id="status-text">Loading...</span>
@@ -54,7 +54,7 @@
             <div class="h-16 flex items-center px-6 border-b border-gray-700">
                 <i data-feather="github" class="w-6 h-6 mr-3 text-primary-blue"></i>
                 <h1 class="text-lg font-semibold text-white leading-tight">
-                    IssuePilot Documentation
+                    OpenPilot Documentation
                 </h1>
             </div>
 
@@ -84,9 +84,9 @@
 
                 <div class="h-px bg-gray-700/50 my-6"></div>
                 
-                <a href="https://issuepilot.pages.dev/" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-sidebar-hover transition duration-150 text-sm font-semibold text-white">
+                <a href="https://openpilot.pages.dev/" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-sidebar-hover transition duration-150 text-sm font-semibold text-white">
                     <i data-feather="arrow-left" class="w-4 h-4 text-primary-blue"></i>
-                    <span>Back to IssuePilot</span>
+                    <span>Back to OpenPilot</span>
                 </a>
             </nav>
         </aside>
@@ -100,7 +100,7 @@
                     <h1 class="text-3xl font-extrabold text-gray-900 mb-8">Overview</h1>
                     <section class="bg-white p-6 rounded-xl shadow-lg mb-12">
                         <p class="text-lg text-gray-600">
-                            This comprehensive guide provides details on linking your GitHub account, managing account deletion, and integrating with the IssuePilot Developer API.
+                            This comprehensive guide provides details on linking your GitHub account, managing account deletion, and integrating with the OpenPilot Developer API.
                         </p>
                     </section>
                 </div>
@@ -112,19 +112,19 @@
                         <h3 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">1. Linking Your Primary GitHub Account</h3>
                         <div class="bg-white p-6 rounded-xl shadow-lg">
                             <p class="text-lg text-gray-600 mb-4">
-                                This is the standard process for connecting your main GitHub identity to IssuePilot. You must provide consent for IssuePilot to access your public repositories and necessary profile data.
+                                This is the standard process for connecting your main GitHub identity to OpenPilot. You must provide consent for OpenPilot to access your public repositories and necessary profile data.
                             </p>
                             <h4 class="font-semibold text-gray-800 mb-2">Steps:</h4>
                             <ol class="list-decimal list-inside space-y-2 text-gray-700 ml-4">
-                                <li>Visit <a href="https://issuepilot.pages.dev/" target="_blank" class="text-primary-blue hover:text-blue-700 font-medium underline">IssuePilot</a></li>
+                                <li>Visit <a href="https://openpilot.pages.dev/" target="_blank" class="text-primary-blue hover:text-blue-700 font-medium underline">OpenPilot</a></li>
                                 <li>Click the 'Connect with GitHub' Button.</li>
                                 <li>Review permissions if you wish.</li>
-                                <li>Click 'Authorise IssuePilot' at the bottom of the page.</li>
+                                <li>Click 'Authorise OpenPilot' at the bottom of the page.</li>
                             </ol>
                             <div class="mt-6">
                                 <img 
                                     src="assets/authorisescreen.png" 
-                                    alt="Screenshot of the GitHub authorization screen for IssuePilot" 
+                                    alt="Screenshot of the GitHub authorization screen for OpenPilot" 
                                     onerror="this.onerror=null; this.src='https://placehold.co/400x250/3b82f6/ffffff?text=GitHub+Auth+Screen+Placeholder';"
                                     class="w-full max-w-lg mx-auto h-auto rounded-lg shadow-xl border border-gray-200 object-contain"
                                 >
@@ -136,7 +136,7 @@
                         <h3 class="text-2xl font-bold text-gray-900 mb-4 border-b pb-2">2. Selecting an Account During Authorization</h3>
                         <div class="bg-white p-6 rounded-xl shadow-lg">
                             <p class="text-lg text-gray-600 mb-4">
-                                If you are currently signed into multiple GitHub accounts in your browser, the GitHub authorization screen will prompt you to select which account you want to link to IssuePilot.
+                                If you are currently signed into multiple GitHub accounts in your browser, the GitHub authorization screen will prompt you to select which account you want to link to OpenPilot.
                             </p>
                             <div class="mb-6">
                                 <img 
@@ -149,17 +149,17 @@
 
                             <h4 class="font-semibold text-gray-800 mb-2">Steps:</h4>
                             <ol class="list-decimal list-inside space-y-2 text-gray-700">
-                                <li>Visit <a href="https://issuepilot.pages.dev/" target="_blank" class="text-primary-blue hover:text-blue-700 font-medium underline">IssuePilot</a>.</li>
+                                <li>Visit <a href="https://openpilot.pages.dev/" target="_blank" class="text-primary-blue hover:text-blue-700 font-medium underline">OpenPilot</a>.</li>
                                 <li>Click the <strong>'Connect with GitHub'</strong> Button. You will be redirected to the GitHub account selection page.</li>
-                                <li>Select the account you wish to link IssuePilot to and then you will be redirected to the GitHub authorization page.</li>
+                                <li>Select the account you wish to link OpenPilot to and then you will be redirected to the GitHub authorization page.</li>
                                 <li>Review permissions if you wish.</li>
-                                <li>Click <strong>'Authorise IssuePilot'</strong> at the bottom of the page.</li>
+                                <li>Click <strong>'Authorise OpenPilot'</strong> at the bottom of the page.</li>
                             </ol>
                             
                             <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800 flex items-start space-x-3">
                                 <i data-feather="info" class="w-5 h-5 flex-shrink-0 mt-0.5"></i>
                                 <p>
-                                    Only the single account you select on this screen will be linked to your IssuePilot profile.
+                                    Only the single account you select on this screen will be linked to your OpenPilot profile.
                                 </p>
                             </div>
                         </div>
@@ -199,7 +199,7 @@
                             </a>
                         </div>
                         
-                        <p class="text-sm text-gray-500 mt-2">This link directs you to the GitHub settings page required to revoke IssuePilot access.</p>
+                        <p class="text-sm text-gray-500 mt-2">This link directs you to the GitHub settings page required to revoke OpenPilot access.</p>
                     </section>
                 </div>
 
@@ -220,7 +220,7 @@
                         </button>
                         
                         <p class="text-sm text-gray-500 mt-4 max-w-sm mx-auto">
-                            This authentication is specifically for the <strong> IssuePilot Developer </strong> service and is separate from your main IssuePilot account.
+                            This authentication is specifically for the <strong> OpenPilot Developer </strong> service and is separate from your main OpenPilot account.
                         </p>
                     </section>
 
@@ -355,8 +355,8 @@
             
             const API_URL = 'https://www.githubstatus.com/api/v2/status.json';
 
-            const setStatus = (description, iconName, bgColor, textColor) => {
-                statusTextSpan.textContent = description;
+            const setStatus = (displayText, iconName, bgColor, textColor) => {
+                statusTextSpan.textContent = displayText;
                 statusDiv.className = `flex items-center space-x-1 p-1 px-3 rounded-full transition-colors duration-300 ${bgColor} ${textColor}`;
                 statusIcon.setAttribute('data-feather', iconName);
                 statusIcon.classList.remove('animate-spin');
@@ -428,19 +428,16 @@
             feather.replace();
             fetchGitHubStatus();
             
-            // Setup GitHub Settings Button functionality (PiP and delayed open)
             const GITHUB_LINK = "https://github.com/settings/connections/applications/Ov23lie813N9LAMIwrVR";
             const githubSettingsBtn = document.getElementById('github-settings-btn');
             const videoElement = document.querySelector('#page-deleting-account video');
 
             if (githubSettingsBtn && videoElement) {
                 
-                // Autoplay when PiP is entered
                 videoElement.addEventListener('enterpictureinpicture', () => {
                     videoElement.play(); 
                 });
 
-                // Pause when PiP is exited, ensuring it stops if the user didn't pause manually
                 videoElement.addEventListener('leavepictureinpicture', () => {
                     videoElement.pause();
                 });
@@ -453,24 +450,18 @@
                     }
                     
                     try {
-                        // 1. Request Picture-in-Picture
-                        // The 'enterpictureinpicture' listener handles the play() call now.
                         await videoElement.requestPictureInPicture();
                         
-                        // 2. Alert the user 
                         alertMessage('Starting tutorial in Picture-in-Picture mode. Opening external site in 2 seconds.', 'info');
                         
-                        // 3. Wait 2 seconds and open the external link
                         setTimeout(() => {
                             window.open(GITHUB_LINK, '_blank');
                         }, 2000);
 
                     } catch (error) {
                         console.error('PiP initiation failed:', error);
-                        // User likely denied permission or the video is too large/small
                         alertMessage('Failed to enter Picture-inPicture. Opening site immediately.', 'error');
                         
-                        // Fallback: open site immediately if PiP fails
                         window.open(GITHUB_LINK, '_blank');
                     }
                 });
