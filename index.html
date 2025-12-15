@@ -69,28 +69,9 @@
     <div class="w-full max-w-2xl bg-white shadow-xl rounded-xl p-6 sm:p-10 mt-8">
         
         <header class="mb-6">
-            <div class="flex items-center justify-center space-x-2 text-gh-primary mb-4">
+            <div class="flex items-center justify-center space-x-2 text-gh-primary">
                 <i data-feather="github" class="w-8 h-8 text-gh-dark"></i>
                 <h1 class="text-3xl font-extrabold tracking-tight">IssuePilot</h1>
-            </div>
-            
-            <div class="border-b border-gray-200">
-                <nav class="-mb-px flex space-x-4 sm:space-x-8" aria-label="Tabs">
-                    <button id="tab-issuepilot" 
-                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gh-primary border-gh-blue" 
-                            data-target="issuepilot-view" aria-current="page">
-                        <i data-feather="send" class="w-4 h-4 mr-2"></i>
-                        <span>IssuePilot</span>
-                    </button>
-
-                    <button id="tab-followpilot" 
-                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700" 
-                            data-target="followpilot-view">
-                        <i data-feather="eye" class="w-4 h-4 mr-2"></i>
-                        <span>FollowPilot</span>
-                        <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">WIP</span>
-                    </button>
-                </nav>
             </div>
         </header>
 
@@ -127,7 +108,26 @@
                 <span>Trouble linking? Click here for help</span>
             </a>
         </div>
+        
+        <div id="tab-navigation-container" class="mb-6 hidden"> 
+            <div class="border-b border-gray-200">
+                <nav id="tab-navigation" class="-mb-px flex space-x-4 sm:space-x-8" aria-label="Tabs">
+                    <button id="tab-issuepilot" 
+                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gh-primary border-gh-blue" 
+                            data-target="issuepilot-view" aria-current="page">
+                        <i data-feather="send" class="w-4 h-4 mr-2"></i>
+                        <span>IssuePilot</span>
+                    </button>
 
+                    <button id="tab-followpilot" 
+                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700" 
+                            data-target="followpilot-view">
+                        <i data-feather="eye" class="w-4 h-4 mr-2"></i>
+                        <span>FollowPilot</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
         <div id="loading-spinner" class="hidden text-center py-10 text-gh-blue">
             <i data-feather="loader" class="w-8 h-8 animate-spin mx-auto mb-2"></i>
             <p>Loading session...</p>
@@ -244,11 +244,49 @@
             </div>
             
             <div id="followpilot-view" data-tab-content class="hidden">
-                <div class="text-center py-16 px-4">
-                    <i data-feather="eye" class="w-12 h-12 mx-auto mb-4 text-gray-400"></i>
-                    <h3 class="text-xl font-semibold text-gh-primary mb-2">FollowPilot: Coming Soon</h3>
-                    <p class="text-gray-600">This feature will allow you to track and follow issues created by IssuePilot, providing real-time updates and notifications.</p>
-                    <p class="mt-4 text-sm text-gray-500">Stay tuned for updates!</p>
+                <div id="follow-auth-required" class="text-center py-10 px-4 space-y-6">
+                    <i data-feather="lock" class="w-10 h-10 mx-auto mb-4 text-red-500"></i>
+                    <h3 class="text-xl font-semibold text-gh-primary">Additional Permissions Required</h3>
+                    <p class="text-gray-600">To follow and unfollow users, IssuePilot needs the <code>user:follow</code> permission, which is not included in the standard sign-in.</p>
+                    <button id="follow-auth-button"
+                            class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                        <i data-feather="user-plus" class="w-5 h-5"></i>
+                        <span>Grant Follower Permissions</span>
+                    </button>
+                    <p class="text-xs text-gray-500">You will be redirected to GitHub to grant access.</p>
+                </div>
+                
+                <div id="follow-main-area" class="hidden">
+                    <h2 class="text-2xl font-semibold text-gh-primary mb-4">Bulk Follow/Unfollow</h2>
+                    
+                    <div id="follow-notification-box" class="hidden p-3 mb-4 rounded-lg text-sm transition-opacity duration-300" role="alert"></div>
+
+                    <div id="user-input-group">
+                        <label for="users-input" class="block text-sm font-medium text-gh-primary mb-1">GitHub Usernames (One per line or comma-separated)</label>
+                        <div class="relative">
+                            <textarea id="users-input" rows="8" placeholder="e.g., username1, username2,&#10;username3"
+                                      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150"></textarea>
+                                      
+                            <div id="mention-suggestions-container-follow" 
+                                 class="absolute z-20 w-full bottom-full mb-1 max-h-40 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg hidden"
+                                 style="bottom: 100%;">
+                            </div>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Start typing usernames (min 3 chars) to see autofill suggestions.</p>
+                    </div>
+                    
+                    <div class="mt-6 flex space-x-4">
+                        <button id="bulk-follow-button"
+                                class="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-gh-success text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                            <i data-feather="user-plus" class="w-5 h-5"></i>
+                            <span>Bulk Follow</span>
+                        </button>
+                        <button id="bulk-unfollow-button"
+                                class="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                            <i data-feather="user-minus" class="w-5 h-5"></i>
+                            <span>Bulk Unfollow</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -358,6 +396,13 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5Y3pmemxvc2xrc3p6cHV2Y3JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2MTQwMjUsImV4cCI6MjA4MTE5MDAyNX0.vy8urIWxuwuaEYCjfHiWQUyBYKDXdhGiK8X4x_bafrw';
         const APP_SIGNATURE = '';
         const ISSUE_HISTORY_KEY = 'issuepilot_history';
+        
+        // Define Scopes
+        const BASIC_GITHUB_SCOPES = 'public_repo'; // For general profile and public repo read access
+        const ISSUE_PILOT_SCOPE = 'write:issue'; // For creating issues
+        const FOLLOW_PILOT_SCOPE = 'user:follow'; // For bulk follow/unfollow
+        const ISSUE_SCOPES = `${BASIC_GITHUB_SCOPES}, ${ISSUE_PILOT_SCOPE}`; // Initial sign-in scope
+        const ALL_SCOPES = `${ISSUE_SCOPES}, ${FOLLOW_PILOT_SCOPE}`; // FollowPilot sign-in scope
 
         const form = document.getElementById('issue-form');
         const issuesListView = document.getElementById('issues-list-view');
@@ -409,10 +454,25 @@
         const tabFollowPilot = document.getElementById('tab-followpilot');
         const issuepilotView = document.getElementById('issuepilot-view');
         const followpilotView = document.getElementById('followpilot-view');
+        const tabNavigationContainer = document.getElementById('tab-navigation-container');
+        
+        // FollowPilot Specific Elements
+        const followAuthButton = document.getElementById('follow-auth-button');
+        const followAuthRequired = document.getElementById('follow-auth-required');
+        const followMainArea = document.getElementById('follow-main-area');
+        const usersInput = document.getElementById('users-input');
+        const bulkFollowButton = document.getElementById('bulk-follow-button');
+        const bulkUnfollowButton = document.getElementById('bulk-unfollow-button');
+        const followNotificationBox = document.getElementById('follow-notification-box');
+        const mentionSuggestionsContainerFollow = document.getElementById('mention-suggestions-container-follow');
+
 
         let currentMentionQuery = '';
         let mentionStartIndex = -1;
         
+        let currentFollowMentionQuery = '';
+        let followMentionStartIndex = -1;
+
         const GITHUB_REVOKE_URL = 'https://github.com/settings/connections/applications/Ov23lie813N9LAMIwrVR';
 
         let githubAccessToken = null;
@@ -445,6 +505,27 @@
                 }, 7000);
             }
         }
+        
+        function showFollowNotification(message, type = 'error') {
+            if (!followNotificationBox) return;
+
+            clearTimeout(notificationTimeout);
+            followNotificationBox.textContent = message;
+            followNotificationBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-yellow-100', 'text-yellow-700');
+            
+            if (type === 'success') {
+                followNotificationBox.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'warning') {
+                followNotificationBox.classList.add('bg-yellow-100', 'text-yellow-700');
+            } else {
+                followNotificationBox.classList.add('bg-red-100', 'text-red-700');
+            }
+
+            notificationTimeout = setTimeout(() => {
+                followNotificationBox.classList.add('hidden');
+            }, 10000);
+        }
+
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -867,11 +948,37 @@
                 issuesLoading.classList.add('hidden');
             }
         }
+        
+        async function signInWithGitHub(scopes = ISSUE_SCOPES) {
+            // Save current tab state before redirect
+            localStorage.setItem('issuepilot_current_tab', document.querySelector('.tab-button[aria-current="page"]')?.dataset.target || 'issuepilot-view');
+            
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    scopes: scopes, 
+                }
+            });
+
+            if (error) {
+                showNotification(`Sign In Failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function signInWithFollowScope() {
+            // This is called from the FollowPilot tab to upgrade permissions
+            localStorage.setItem('issuepilot_follow_granted', 'true');
+            await signInWithGitHub(ALL_SCOPES);
+        }
 
         function updateUI(session) {
             loadingSpinner.classList.add('hidden');
 
-            if (session && session.provider_token) {
+            const isSignedOut = !session || !session.provider_token;
+            let isFollowPilotAuth = !isSignedOut && localStorage.getItem('issuepilot_follow_granted') === 'true';
+
+
+            if (!isSignedOut) {
                 githubAccessToken = session.provider_token;
                 
                 const user = session.user;
@@ -890,20 +997,39 @@
                 userAvatar.src = userMetadata.avatar_url || 'https://placehold.co/32x32/cccccc/333333?text=U';
                 
                 authButton.innerHTML = `<i data-feather="log-out" class="w-5 h-5"></i><span id="auth-button-text">Sign Out</span>`;
-                authButton.classList.remove('bg-red-500');
-                authButton.classList.add('bg-gh-blue', 'sm:text-white'); 
+                authButton.classList.remove('bg-gh-blue');
+                authButton.classList.add('bg-red-500'); 
                 
                 kebabButton.classList.remove('hidden');
+                tabNavigationContainer.classList.remove('hidden'); // SHOW TABS
 
-                showNotification(`Logged in as ${userName.textContent}. Loading your issue history...`, 'success');
+                showNotification(`Logged in as ${userName.textContent}. Loading your data...`, 'success');
                 
-                switchView('list');
-                fetchUserIssues(githubUsername);
+                // FollowPilot View Logic
+                if (isFollowPilotAuth) {
+                    followAuthRequired.classList.add('hidden');
+                    followMainArea.classList.remove('hidden');
+                } else {
+                    followAuthRequired.classList.remove('hidden');
+                    followMainArea.classList.add('hidden');
+                }
 
+
+                // Restore previous tab or default to issuepilot
+                const lastTab = localStorage.getItem('issuepilot_current_tab') || 'issuepilot-view';
+                switchTab(lastTab);
+                
+                if (lastTab === 'issuepilot-view') {
+                     switchView('list');
+                     fetchUserIssues(githubUsername);
+                }
 
             } else {
+                // Logged Out State
                 githubAccessToken = null;
                 githubUsername = null;
+                
+                localStorage.removeItem('issuepilot_follow_granted'); // Clear follow permission flag
 
                 authArea.classList.remove('justify-between', 'flex-row');
                 authArea.classList.add('justify-center', 'flex-col', 'space-y-3');
@@ -912,6 +1038,8 @@
                 userProfile.classList.remove('flex');
                 issuesListView.classList.add('hidden');
                 form.classList.add('hidden');
+                
+                tabNavigationContainer.classList.add('hidden'); // HIDE TABS
                 
                 helpLink.classList.remove('hidden');
                 
@@ -923,23 +1051,10 @@
                 
                 showNotification('Please sign in with GitHub to create issues via the API.', 'warning', true);
 
-                // Default to IssuePilot tab view
+                // Default to IssuePilot tab view (even though hidden)
                 switchTab('issuepilot-view');
             }
             feather.replace();
-        }
-
-        async function signInWithGitHub() {
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: 'github',
-                options: {
-                    scopes: 'public_repo, write:issue', 
-                }
-            });
-
-            if (error) {
-                showNotification(`Sign In Failed: ${error.message}`, 'error');
-            }
         }
 
         async function signOut() {
@@ -1228,6 +1343,217 @@
                 feather.replace();
             }
         }
+        
+        // --- FollowPilot Logic ---
+        
+        function getFollowUsersList() {
+            const rawText = usersInput.value.trim();
+            // Split by comma, newline, or mixed, then trim and filter empty strings
+            return rawText.split(/[\s,]+/) 
+                          .map(user => user.trim())
+                          .filter(user => user.length > 0);
+        }
+
+        async function bulkFollowUnfollow(action) {
+            if (!githubAccessToken || localStorage.getItem('issuepilot_follow_granted') !== 'true') {
+                showFollowNotification('Please grant "Follower Permissions" first.', 'error');
+                return;
+            }
+
+            const users = getFollowUsersList();
+            if (users.length === 0) {
+                showFollowNotification('Please enter at least one username.', 'warning');
+                return;
+            }
+
+            const isFollow = action === 'follow';
+            const method = isFollow ? 'PUT' : 'DELETE';
+            const successCount = { success: 0, failure: 0, skipped: 0 };
+            
+            bulkFollowButton.disabled = true;
+            bulkUnfollowButton.disabled = true;
+            const originalFollowHtml = bulkFollowButton.innerHTML;
+            const originalUnfollowHtml = bulkUnfollowButton.innerHTML;
+
+            // Clear previous notification
+            followNotificationBox.classList.add('hidden');
+
+            const updateProgress = () => {
+                if (isFollow) {
+                    bulkFollowButton.innerHTML = `<i data-feather="loader" class="w-5 h-5 animate-spin"></i><span>Following (${successCount.success}/${users.length})...</span>`;
+                } else {
+                    bulkUnfollowButton.innerHTML = `<i data-feather="loader" class="w-5 h-5 animate-spin"></i><span>Unfollowing (${successCount.success}/${users.length})...</span>`;
+                }
+                feather.replace();
+            }
+
+            updateProgress();
+
+            for (const username of users) {
+                if (username.toLowerCase() === githubUsername.toLowerCase()) {
+                    successCount.skipped++;
+                    continue;
+                }
+
+                const apiUrl = `https://api.github.com/user/following/${username}`;
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: method,
+                        headers: {
+                            'Authorization': `Bearer ${githubAccessToken}`,
+                            'Content-Length': 0, // PUT/DELETE often requires Content-Length: 0
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+
+                    if (response.status === 204) { // 204 No Content is success for follow/unfollow
+                        successCount.success++;
+                    } else if (response.status === 404) {
+                        successCount.failure++;
+                        // showFollowNotification(`User @${username} not found on GitHub.`, 'warning');
+                    } else {
+                        successCount.failure++;
+                        // const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                        // showFollowNotification(`Failed to ${action} @${username}: ${errorData.message}`, 'error');
+                    }
+
+                } catch (error) {
+                    successCount.failure++;
+                    // showFollowNotification(`Network error attempting to ${action} @${username}.`, 'error');
+                }
+                
+                updateProgress();
+            }
+            
+            // Final UI update
+            bulkFollowButton.disabled = false;
+            bulkUnfollowButton.disabled = false;
+            bulkFollowButton.innerHTML = originalFollowHtml;
+            bulkUnfollowButton.innerHTML = originalUnfollowHtml;
+            feather.replace();
+
+            let finalMessage = `Bulk ${isFollow ? 'Follow' : 'Unfollow'} complete: ${successCount.success} successful, ${successCount.failure} failed, ${successCount.skipped} skipped.`;
+            showFollowNotification(finalMessage, successCount.failure > 0 ? 'warning' : 'success');
+        }
+
+        // --- FollowPilot Autofill Logic ---
+        
+        function hideFollowMentionDropdown() {
+            mentionSuggestionsContainerFollow.classList.add('hidden');
+            currentFollowMentionQuery = '';
+            followMentionStartIndex = -1;
+        }
+
+        function checkFollowMentionTrigger() {
+            const textarea = usersInput;
+            const value = textarea.value;
+            const caretPos = textarea.selectionStart;
+
+            // Find the start of the current word/token near the caret position
+            const tokenRegex = /([\w-]+)$/; // Capture username part, including hyphens
+            const textBeforeCaret = value.substring(0, caretPos);
+            
+            const match = textBeforeCaret.match(tokenRegex);
+            
+            if (match) {
+                const query = match[1];
+                const start = match.index;
+                
+                if (query.length >= 3) {
+                    currentFollowMentionQuery = query;
+                    followMentionStartIndex = start;
+                    debouncedFetchFollowUsers(query);
+                    return;
+                }
+            }
+
+            hideFollowMentionDropdown();
+        }
+
+        async function fetchFollowUserSuggestions(query) {
+            if (!githubAccessToken) {
+                hideFollowMentionDropdown();
+                return;
+            }
+            
+            const apiUrl = `https://api.github.com/search/users?q=${encodeURIComponent(query)} in:login&per_page=5`;
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'Authorization': `Bearer ${githubAccessToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    renderFollowUserSuggestions(data.items);
+                } else {
+                    hideFollowMentionDropdown();
+                }
+            } catch (error) {
+                hideFollowMentionDropdown();
+            }
+        }
+                
+        const debouncedFetchFollowUsers = debounce(fetchFollowUserSuggestions, 300);
+
+        function handleFollowMentionSelection(username) {
+            const textarea = usersInput;
+            const value = textarea.value;
+            
+            const textBeforeMention = value.substring(0, followMentionStartIndex);
+            const textAfterMention = value.substring(textarea.selectionEnd);
+            
+            const newText = textBeforeMention + username + textAfterMention;
+            
+            textarea.value = newText;
+            
+            const newCaretPos = followMentionStartIndex + username.length;
+            textarea.selectionStart = newCaretPos;
+            textarea.selectionEnd = newCaretPos;
+
+            hideFollowMentionDropdown();
+        }
+
+        function renderFollowUserSuggestions(users) {
+            mentionSuggestionsContainerFollow.innerHTML = '';
+            
+            // Re-calculate the dropdown position relative to the textarea's scroll
+            const textareaRect = usersInput.getBoundingClientRect();
+            const containerRect = mentionSuggestionsContainerFollow.parentElement.getBoundingClientRect();
+            
+            // Set position using container's relative space and textarea's content position
+            // Set bottom to the height of the textarea minus the current scroll position, plus a little buffer
+            const scrollBottom = usersInput.scrollHeight - usersInput.scrollTop;
+            // This calculation is tricky in a general sense, simple bottom positioning works best for single-line.
+            // For multiline, we'll try to keep it at the bottom of the container.
+
+            if (!users || users.length === 0) {
+                hideFollowMentionDropdown();
+                return;
+            }
+            
+            users.forEach(user => {
+                const item = document.createElement('div');
+                item.className = 'p-2 cursor-pointer hover:bg-gh-blue/10 text-gh-dark transition duration-100 flex items-center space-x-2 border-b border-gray-100 last:border-b-0';
+                item.innerHTML = `
+                    <img src="${user.avatar_url}" class="w-6 h-6 rounded-full" alt="${user.login}" onerror="this.onerror=null;this.src='https://placehold.co/24x24/cccccc/333333?text=U'">
+                    <span class="font-medium text-sm">@${user.login}</span>
+                `;
+                
+                item.addEventListener('mousedown', (e) => {
+                    e.preventDefault(); 
+                    handleFollowMentionSelection(user.login);
+                });
+                mentionSuggestionsContainerFollow.appendChild(item);
+            });
+
+            mentionSuggestionsContainerFollow.classList.remove('hidden');
+        }
+
+
 
         document.addEventListener('DOMContentLoaded', () => {
             feather.replace();
@@ -1314,16 +1640,30 @@
             tabIssuePilot.addEventListener('click', () => {
                 switchTab('issuepilot-view');
                 if (githubAccessToken) {
-                    switchView('list'); // Show list view if signed in
-                } else {
-                    // Hide sub-views if signed out
-                    issuesListView.classList.add('hidden');
-                    form.classList.add('hidden');
+                    // Force refresh view to list
+                    switchView('list'); 
+                    fetchUserIssues(githubUsername); 
                 }
             });
 
             tabFollowPilot.addEventListener('click', () => {
                 switchTab('followpilot-view');
+                // No need to run an API call here, logic is in updateUI on sign-in, or in auth buttons
+            });
+            
+            // FollowPilot Specific Event Listeners
+            followAuthButton.addEventListener('click', signInWithFollowScope);
+            bulkFollowButton.addEventListener('click', () => bulkFollowUnfollow('follow'));
+            bulkUnfollowButton.addEventListener('click', () => bulkFollowUnfollow('unfollow'));
+            
+            usersInput.addEventListener('input', checkFollowMentionTrigger);
+            usersInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    hideFollowMentionDropdown();
+                }
+            });
+            usersInput.addEventListener('blur', () => {
+                setTimeout(hideFollowMentionDropdown, 100); 
             });
 
 
