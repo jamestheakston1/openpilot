@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IssuePilot - Create GitHub Issues Instantly</title>
+    <title>OpenPilot - Create GitHub Issues Instantly</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -62,25 +62,6 @@
             max-height: 70vh;
             overflow-y: auto;
         }
-        /* Custom CSS for the Beta Label */
-        .beta-tag {
-            background-color: #f97316; /* Tailwind orange-600 */
-            color: white;
-            font-size: 0.625rem; /* ~10px */
-            font-weight: bold;
-            padding: 0px 6px;
-            border-radius: 9999px; /* Full rounded */
-            margin-left: 4px;
-            letter-spacing: 0.05em;
-            line-height: 1.25;
-            text-transform: uppercase;
-            position: relative; /* Ensure proper positioning */
-            top: -2px; /* Slight adjustment for alignment */
-        }
-        .tab-button-followpilot {
-            display: flex;
-            align-items: center;
-        }
     </style>
 </head>
 <body class="min-h-screen flex items-start justify-center p-4 sm:p-8">
@@ -90,7 +71,7 @@
         <header class="mb-6">
             <div class="flex items-center justify-center space-x-2 text-gh-primary">
                 <i data-feather="github" class="w-8 h-8 text-gh-dark"></i>
-                <h1 class="text-3xl font-extrabold tracking-tight">IssuePilot</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight">OpenPilot</h1>
             </div>
         </header>
 
@@ -139,13 +120,12 @@
                     </button>
 
                     <button id="tab-followpilot" 
-                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700 tab-button-followpilot" 
+                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700" 
                             data-target="followpilot-view">
                         <i data-feather="eye" class="w-4 h-4 mr-2"></i>
                         <span>FollowPilot</span>
-                        <span class="beta-tag">BETA</span>
                     </button>
-                    </nav>
+                </nav>
             </div>
         </div>
         <div id="loading-spinner" class="hidden text-center py-10 text-gh-blue">
@@ -212,17 +192,8 @@
                             <textarea id="body-input" rows="8" placeholder="Provide context, steps to reproduce, or detailed specifications. (Markdown is supported)"
                                       class="w-full p-3 pl-3 pr-3 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150"></textarea>
 
-                            <div id="mention-suggestions-container" class="absolute z-20 w-full top-full mt-1 max-h-40 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg hidden">
                             </div>
-                        </div>
-                        <div class="mt-2 flex justify-between items-center">
-                            <p class="text-xs text-gray-500">Use <code>@username</code> to mention people in the issue.</p>
-                            <button type="button" id="mention-button"
-                                    class="flex items-center space-x-1 px-3 py-1 text-xs bg-gray-200 text-gh-dark font-semibold rounded-lg hover:bg-gray-300 transition duration-150">
-                                <i data-feather="at-sign" class="w-3 h-3"></i>
-                                <span>@ Insert Symbol</span>
-                            </button>
-                        </div>
+                        <p class="mt-2 text-xs text-gray-500">Use <code>@username</code> to mention people in the issue.</p>
                     </div>
                     
                     
@@ -277,25 +248,6 @@
                 </div>
                 
                 <div id="follow-main-area" class="hidden">
-                    
-                    <div id="follow-test-area" class="mb-8 p-4 border border-indigo-200 rounded-lg bg-indigo-50">
-                        <h3 class="text-lg font-semibold text-indigo-800 mb-3">Test: Emit @ Symbol</h3>
-                        <div class="flex items-center space-x-3">
-                            <div class="relative flex-grow">
-                                <input type="text" id="follow-test-input" placeholder="@githubusername"
-                                       class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150">
-                                <i data-feather="at-sign" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                            </div>
-                            <button id="follow-test-button" type="button"
-                                    class="inline-flex items-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                Continue
-                            </button>
-                        </div>
-                        <p class="mt-3 text-sm font-medium text-indigo-700 mb-1">Emitted Value:</p>
-                        <code id="follow-test-output" class="block p-3 bg-gray-800 text-green-400 font-mono rounded-md text-sm">
-                            Awaiting input...
-                        </code>
-                    </div>
                     <h2 class="text-2xl font-semibold text-gh-primary mb-4">Bulk Follow/Unfollow</h2>
                     
                     <div id="follow-notification-box" class="hidden p-3 mb-4 rounded-lg text-sm transition-opacity duration-300" role="alert"></div>
@@ -472,8 +424,6 @@
         const labelsInput = document.getElementById('labels-input');
         const assigneesInput = document.getElementById('assignees-input');
         const milestoneInput = document.getElementById('milestone-input');
-        const mentionButton = document.getElementById('mention-button');
-        const mentionSuggestionsContainer = document.getElementById('mention-suggestions-container');
         
         const issueModal = document.getElementById('issue-modal');
         const closeModalButton = document.getElementById('close-modal-button');
@@ -505,21 +455,13 @@
         const followNotificationBox = document.getElementById('follow-notification-box');
         const mentionSuggestionsContainerFollow = document.getElementById('mention-suggestions-container-follow');
 
-        // START: NEW FOLLOWPILOT TEST ELEMENTS
-        const followTestInput = document.getElementById('follow-test-input');
-        const followTestButton = document.getElementById('follow-test-button');
-        const followTestOutput = document.getElementById('follow-test-output');
-        // END: NEW FOLLOWPILOT TEST ELEMENTS
 
-        let currentMentionQuery = '';
-        let mentionStartIndex = -1;
-        
+        // Removed: currentMentionQuery, mentionStartIndex
+
         let currentFollowMentionQuery = '';
         let followMentionStartIndex = -1;
 
-        // START: UPDATED GITHUB REVOKE URL (OAuth App)
-        const GITHUB_REVOKE_URL = 'https://github.com/settings/connections/applications/Ov23liBtHbDXjRPOTC9v';
-        // END: UPDATED GITHUB REVOKE URL
+        const GITHUB_REVOKE_URL = 'https://github.com/settings/connections/applications/Ov23lie813N9LAMIwrVR';
 
         let githubAccessToken = null;
         let githubUsername = null;
@@ -1153,125 +1095,9 @@
             await signOut();
         }
 
-        function insertAtCursor(textarea, text) {
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const value = textarea.value;
+        // Removed: insertAtCursor
 
-            textarea.value = value.substring(0, start) + text + value.substring(end);
-            
-            const newCursorPosition = start + text.length;
-            textarea.selectionStart = newCursorPosition;
-            textarea.selectionEnd = newCursorPosition;
-            textarea.focus();
-        }
-        
-        function hideMentionDropdown() {
-            mentionSuggestionsContainer.classList.add('hidden');
-            currentMentionQuery = '';
-            mentionStartIndex = -1;
-        }
-
-        function checkMentionTrigger() {
-            const value = bodyInput.value;
-            const caretPos = bodyInput.selectionStart;
-
-            const mentionRegex = /(?:\s|^)@(\w*)/g;
-            let match;
-            let lastMatch = null;
-            
-            while ((match = mentionRegex.exec(value)) !== null) {
-                if (match.index + match[0].length >= caretPos) {
-                    lastMatch = match;
-                    break; 
-                }
-            }
-            
-            if (lastMatch) {
-                const query = lastMatch[1];
-                const start = lastMatch.index + lastMatch[0].indexOf('@') + 1; 
-                
-                if (caretPos >= start && caretPos <= start + query.length && query.length >= 3) {
-                    currentMentionQuery = query;
-                    mentionStartIndex = start;
-                    debouncedFetchUsers(query);
-                    return;
-                }
-            }
-            
-            hideMentionDropdown();
-        }
-
-        async function fetchUserSuggestions(query) {
-            if (!githubAccessToken) {
-                hideMentionDropdown();
-                return;
-            }
-
-            const apiUrl = `https://api.github.com/search/users?q=${encodeURIComponent(query)} in:login&per_page=5`;
-            
-            try {
-                const response = await fetch(apiUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${githubAccessToken}`,
-                        'Accept': 'application/vnd.github.v3+json'
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    renderUserSuggestions(data.items);
-                } else {
-                    hideMentionDropdown();
-                }
-            } catch (error) {
-                hideMentionDropdown();
-            }
-        }
-        
-        const debouncedFetchUsers = debounce(fetchUserSuggestions, 300);
-
-        function handleMentionSelection(username) {
-            const textarea = bodyInput;
-            const value = textarea.value;
-            
-            const mentionStart = mentionStartIndex - 1; 
-            const newText = value.substring(0, mentionStart) + `@${username} ` + value.substring(textarea.selectionEnd);
-            
-            textarea.value = newText;
-            
-            const newCaretPos = mentionStart + `@${username} `.length;
-            textarea.selectionStart = newCaretPos;
-            textarea.selectionEnd = newCaretPos;
-
-            hideMentionDropdown();
-        }
-
-        function renderUserSuggestions(users) {
-            mentionSuggestionsContainer.innerHTML = '';
-
-            if (!users || users.length === 0) {
-                hideMentionDropdown();
-                return;
-            }
-            
-            users.forEach(user => {
-                const item = document.createElement('div');
-                item.className = 'p-2 cursor-pointer hover:bg-gh-blue/10 text-gh-dark transition duration-100 flex items-center space-x-2 border-b border-gray-100 last:border-b-0';
-                item.innerHTML = `
-                    <img src="${user.avatar_url}" class="w-6 h-6 rounded-full" alt="${user.login}" onerror="this.onerror=null;this.src='https://placehold.co/24x24/cccccc/333333?text=U'">
-                    <span class="font-medium text-sm">@${user.login}</span>
-                `;
-                
-                item.addEventListener('mousedown', (e) => {
-                    e.preventDefault(); 
-                    handleMentionSelection(user.login);
-                });
-                mentionSuggestionsContainer.appendChild(item);
-            });
-
-            mentionSuggestionsContainer.classList.remove('hidden');
-        }
+        // Removed: hideMentionDropdown, checkMentionTrigger, fetchUserSuggestions, debouncedFetchUsers, handleMentionSelection, renderUserSuggestions
 
 
         async function createIssue(event) {
@@ -1481,31 +1307,8 @@
             let finalMessage = `Bulk ${isFollow ? 'Follow' : 'Unfollow'} complete: ${successCount.success} successful, ${successCount.failure} failed, ${successCount.skipped} skipped.`;
             showFollowNotification(finalMessage, successCount.failure > 0 ? 'warning' : 'success');
         }
-        
-        // --- START: NEW FOLLOWPILOT INPUT EMIT LOGIC ---
-        function handleFollowTestClick() {
-            const input = followTestInput.value.trim();
-            const output = followTestOutput;
 
-            // Check for the format: @[githubusername]
-            const regex = /^@([\w-]+)$/; 
-
-            if (regex.test(input)) {
-                // If the format matches @username, emit the full input string
-                output.textContent = input; 
-                output.classList.remove('text-red-400');
-                output.classList.add('text-green-400');
-            } else {
-                // If the format is incorrect, show an error message
-                output.textContent = `Error: Input must be in the format @username (e.g., @octocat)`;
-                output.classList.remove('text-green-400');
-                output.classList.add('text-red-400');
-            }
-        }
-        // --- END: NEW FOLLOWPILOT INPUT EMIT LOGIC ---
-
-
-        // --- FollowPilot Autofill Logic (Existing) ---
+        // --- FollowPilot Autofill Logic ---
         
         function hideFollowMentionDropdown() {
             mentionSuggestionsContainerFollow.classList.add('hidden');
@@ -1655,21 +1458,8 @@
                 }
             });
 
-            mentionButton.addEventListener('click', () => {
-                insertAtCursor(bodyInput, '@');
-                bodyInput.focus(); 
-            });
-
-            bodyInput.addEventListener('input', checkMentionTrigger);
-            bodyInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    hideMentionDropdown();
-                }
-            });
-            bodyInput.addEventListener('blur', () => {
-                setTimeout(hideMentionDropdown, 100); 
-            });
-
+            // Removed: mentionButton, bodyInput mention event listeners
+            
             document.addEventListener('click', (e) => {
                 if (kebabMenu && !kebabMenu.contains(e.target)) {
                     dropdownMenu.classList.add('hidden');
@@ -1725,9 +1515,6 @@
             bulkFollowButton.addEventListener('click', () => bulkFollowUnfollow('follow'));
             bulkUnfollowButton.addEventListener('click', () => bulkFollowUnfollow('unfollow'));
             
-            // NEW: FollowPilot Test Button Listener
-            followTestButton.addEventListener('click', handleFollowTestClick);
-
             usersInput.addEventListener('input', checkFollowMentionTrigger);
             usersInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
