@@ -78,33 +78,36 @@
 
         <div id="notification-box" class="hidden p-3 mb-6 rounded-lg text-sm transition-opacity duration-300" role="alert"></div>
 
-        <div id="auth-area" class="flex flex-col justify-center items-center space-y-3 mb-6 p-4 border rounded-lg bg-gh-bg">
-            <div id="user-profile" class="hidden items-center space-x-3">
-                <img id="user-avatar" class="w-8 h-8 rounded-full" src="" alt="User Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/cccccc/333333?text=User'">
-                <span id="user-name" class="font-semibold text-gh-dark"></span>
+        <div id="auth-area" class="mb-6 p-4 border rounded-lg bg-gh-bg flex flex-col items-center">
+            
+            <div id="user-status-row" class="w-full flex items-center justify-center">
+                <div id="user-profile" class="hidden items-center space-x-3">
+                    <img id="user-avatar" class="w-8 h-8 rounded-full" src="" alt="User Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/cccccc/333333?text=User'">
+                    <span id="user-name" class="font-semibold text-gh-dark"></span>
 
-                <div id="kebab-menu" class="relative ml-3 sm:ml-4">
-                    <button id="kebab-button" class="p-1 rounded-full hover:bg-gray-200 transition duration-150" aria-label="Account options">
-                        <i data-feather="more-vertical" class="w-5 h-5 text-gray-500"></i>
-                    </button>
-
-                    <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20 hidden origin-top-right">
-                        <button id="delete-account-button"
-                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center space-x-2 transition duration-150">
-                            <i data-feather="trash-2" class="w-4 h-4"></i>
-                            <span>Delete Account</span>
+                    <div id="kebab-menu" class="relative ml-3 sm:ml-4">
+                        <button id="kebab-button" class="p-1 rounded-full hover:bg-gray-200 transition duration-150" aria-label="Account options">
+                            <i data-feather="more-vertical" class="w-5 h-5 text-gray-500"></i>
                         </button>
+
+                        <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20 hidden origin-top-right">
+                            <button id="delete-account-button"
+                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center space-x-2 transition duration-150">
+                                <i data-feather="trash-2" class="w-4 h-4"></i>
+                                <span>Delete Account</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
+                
+                <button id="auth-button"
+                        class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                    <i data-feather="github" class="w-5 h-5"></i>
+                    <span id="auth-button-text">Connect with GitHub (Basic)</span>
+                </button>
             </div>
             
-            <button id="auth-button"
-                    class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
-                <i data-feather="github" class="w-5 h-5"></i>
-                <span id="auth-button-text">Connect with GitHub</span>
-            </button>
-            
-            <div id="repo-auth-container" class="w-full sm:w-auto hidden flex-col items-center space-y-3">
+            <div id="repo-auth-container" class="w-full sm:w-auto hidden flex-col items-center space-y-3 mt-4 pt-4 border-t border-gray-200">
                 <p class="text-sm text-gray-700 font-medium">To create and view issues, we need repository access:</p>
                 <button id="repo-auth-button"
                         class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-success text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
@@ -114,7 +117,7 @@
             </div>
 
             <a id="help-link" href="/docs#linking" 
-               class="flex items-center space-x-1 text-sm text-gray-500 hover:text-gh-blue transition duration-150">
+               class="flex items-center space-x-1 text-sm text-gray-500 hover:text-gh-blue transition duration-150 mt-3">
                 <i data-feather="external-link" class="w-4 h-4"></i>
                 <span>Trouble linking? Click here for help</span>
             </a>
@@ -353,10 +356,11 @@
         const submitButton = document.getElementById('submit-button');
         const authButton = document.getElementById('auth-button');
         const userProfile = document.getElementById('user-profile');
-        const userAvatar = document.getElementById('user-avatar');
         const userName = document.getElementById('user-name');
+        const userAvatar = document.getElementById('user-avatar');
         const loadingSpinner = document.getElementById('loading-spinner');
         const authArea = document.getElementById('auth-area');
+        const userStatusRow = document.getElementById('user-status-row'); // New element reference
         const kebabButton = document.getElementById('kebab-button');
         const dropdownMenu = document.getElementById('dropdown-menu');
         const deleteAccountButton = document.getElementById('delete-account-button');
@@ -835,6 +839,7 @@
             loadingSpinner.classList.add('hidden');
 
             if (session && session.provider_token) {
+                // SIGNED IN STATE
                 githubAccessToken = session.provider_token;
                 
                 const user = session.user;
@@ -842,11 +847,14 @@
                 githubUsername = userMetadata.user_name;
                 hasRepoAccess = checkRepoAccess(session);
 
-                authArea.classList.remove('justify-center', 'flex-col', 'space-y-3');
-                authArea.classList.add('justify-between', 'flex-row');
+                userStatusRow.classList.remove('justify-center');
+                userStatusRow.classList.add('justify-between');
 
                 userProfile.classList.remove('hidden');
                 userProfile.classList.add('flex');
+                
+                // Make auth button smaller (Sign Out)
+                authButton.classList.remove('w-full');
                 
                 helpLink.classList.add('hidden');
 
@@ -855,18 +863,19 @@
                 
                 authButton.innerHTML = `<i data-feather="log-out" class="w-5 h-5"></i><span id="auth-button-text">Sign Out</span>`;
                 authButton.classList.remove('bg-gh-blue');
-                authButton.classList.add('bg-gray-400', 'sm:text-white', 'hover:bg-gray-500'); 
+                authButton.classList.add('bg-gray-400', 'hover:bg-gray-500'); 
                 
-                kebabButton.classList.remove('hidden');
-                repoAuthContainer.classList.add('hidden'); 
+                dropdownMenu.classList.add('hidden'); 
                 
                 
                 if (hasRepoAccess) {
-                    showNotification(`Logged in as ${userName.textContent} with full access. Loading history...`, 'success');
+                    // FULL ACCESS
+                    showNotification(`Logged in as ${userName.textContent} with full access. Loading history...`, 'success', true);
                     repoAuthContainer.classList.add('hidden');
                     switchView('list');
                     fetchUserIssues(githubUsername);
                 } else {
+                    // BASIC ACCESS
                     showNotification(`Logged in as ${userName.textContent} (Basic). Grant repository access to create and view issues.`, 'warning', true);
                     repoAuthContainer.classList.remove('hidden');
                     repoAuthContainer.classList.add('flex');
@@ -876,12 +885,13 @@
 
 
             } else {
+                // SIGNED OUT STATE
                 githubAccessToken = null;
                 githubUsername = null;
                 hasRepoAccess = false;
 
-                authArea.classList.remove('justify-between', 'flex-row');
-                authArea.classList.add('justify-center', 'flex-col', 'space-y-3');
+                userStatusRow.classList.remove('justify-between');
+                userStatusRow.classList.add('justify-center');
 
                 userProfile.classList.add('hidden');
                 userProfile.classList.remove('flex');
@@ -891,6 +901,8 @@
                 
                 helpLink.classList.remove('hidden');
                 
+                // Make auth button full width (Connect Basic)
+                authButton.classList.add('w-full');
                 authButton.innerHTML = `<i data-feather="github" class="w-5 h-5"></i><span id="auth-button-text">${signInText}</span>`;
                 authButton.classList.remove('bg-gray-400', 'hover:bg-gray-500');
                 authButton.classList.add('bg-gh-blue');
