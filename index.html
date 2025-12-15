@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenPilot - Create GitHub Issues Instantly</title>
+    <title>IssuePilot - Create GitHub Issues Instantly</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -68,56 +68,61 @@
 
     <div class="w-full max-w-2xl bg-white shadow-xl rounded-xl p-6 sm:p-10 mt-8">
         
-        <header class="text-center mb-8">
-            <div class="flex items-center justify-center space-x-2 text-gh-primary">
+        <header class="mb-6">
+            <div class="flex items-center justify-center space-x-2 text-gh-primary mb-4">
                 <i data-feather="github" class="w-8 h-8 text-gh-dark"></i>
-                <h1 class="text-3xl font-extrabold tracking-tight">OpenPilot</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight">IssuePilot</h1>
             </div>
-            <p class="text-gray-500 mt-2 text-lg">Create GitHub Issues instantly using the API.</p>
+            
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-4 sm:space-x-8" aria-label="Tabs">
+                    <button id="tab-issuepilot" 
+                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gh-primary border-gh-blue" 
+                            data-target="issuepilot-view" aria-current="page">
+                        <i data-feather="send" class="w-4 h-4 mr-2"></i>
+                        <span>IssuePilot</span>
+                    </button>
+
+                    <button id="tab-followpilot" 
+                            class="tab-button inline-flex items-center px-1 py-3 border-b-2 font-medium text-sm transition-colors duration-150 text-gray-500 border-transparent hover:border-gray-300 hover:text-gray-700" 
+                            data-target="followpilot-view">
+                        <i data-feather="eye" class="w-4 h-4 mr-2"></i>
+                        <span>FollowPilot</span>
+                        <span class="ml-2 px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-700">WIP</span>
+                    </button>
+                </nav>
+            </div>
         </header>
 
         <div id="notification-box" class="hidden p-3 mb-6 rounded-lg text-sm transition-opacity duration-300" role="alert"></div>
 
-        <div id="auth-area" class="mb-6 p-4 border rounded-lg bg-gh-bg flex flex-col items-center">
-            
-            <div id="user-status-row" class="w-full flex items-center justify-center">
-                <div id="user-profile" class="hidden items-center space-x-3">
-                    <img id="user-avatar" class="w-8 h-8 rounded-full" src="" alt="User Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/cccccc/333333?text=User'">
-                    <span id="user-name" class="font-semibold text-gh-dark"></span>
+        <div id="auth-area" class="flex flex-col justify-center items-center space-y-3 mb-6 p-4 border rounded-lg bg-gh-bg">
+            <div id="user-profile" class="hidden items-center space-x-3">
+                <img id="user-avatar" class="w-8 h-8 rounded-full" src="" alt="User Avatar" onerror="this.onerror=null;this.src='https://placehold.co/32x32/cccccc/333333?text=User'">
+                <span id="user-name" class="font-semibold text-gh-dark"></span>
 
-                    <div id="kebab-menu" class="relative ml-3 sm:ml-4">
-                        <button id="kebab-button" class="p-1 rounded-full hover:bg-gray-200 transition duration-150" aria-label="Account options">
-                            <i data-feather="more-vertical" class="w-5 h-5 text-gray-500"></i>
+                <div id="kebab-menu" class="relative ml-3 sm:ml-4">
+                    <button id="kebab-button" class="p-1 rounded-full hover:bg-gray-200 transition duration-150" aria-label="Account options">
+                        <i data-feather="more-vertical" class="w-5 h-5 text-gray-500"></i>
+                    </button>
+
+                    <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20 hidden origin-top-right">
+                        <button id="delete-account-button"
+                                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center space-x-2 transition duration-150">
+                            <i data-feather="trash-2" class="w-4 h-4"></i>
+                            <span>Delete Account</span>
                         </button>
-
-                        <div id="dropdown-menu" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-20 hidden origin-top-right">
-                            <button id="delete-account-button"
-                                    class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg flex items-center space-x-2 transition duration-150">
-                                <i data-feather="trash-2" class="w-4 h-4"></i>
-                                <span>Delete Account</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
-                
-                <button id="auth-button"
-                        class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
-                    <i data-feather="github" class="w-5 h-5"></i>
-                    <span id="auth-button-text">Connect with GitHub (Basic)</span>
-                </button>
             </div>
+            <button id="auth-button"
+                    class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                <i data-feather="github" class="w-5 h-5"></i>
+                <span id="auth-button-text">Connect with GitHub</span>
+            </button>
             
-            <div id="repo-auth-container" class="w-full sm:w-auto hidden flex-col items-center space-y-3 mt-4 pt-4 border-t border-gray-200">
-                <p class="text-sm text-gray-700 font-medium">To create and view issues, we need repository access:</p>
-                <button id="repo-auth-button"
-                        class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-success text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
-                    <i data-feather="lock" class="w-5 h-5"></i>
-                    <span>Grant Repository Access</span>
-                </button>
-            </div>
-
             <a id="help-link" href="/docs#linking" 
-               class="flex items-center space-x-1 text-sm text-gray-500 hover:text-gh-blue transition duration-150 mt-3">
+               class="flex items-center space-x-1 text-sm text-gray-500 hover:text-gh-blue transition duration-150">
                 <i data-feather="external-link" class="w-4 h-4"></i>
                 <span>Trouble linking? Click here for help</span>
             </a>
@@ -130,109 +135,122 @@
 
         <div id="main-content-area" class="mt-6">
             
-            <div id="issues-list-view" class="hidden space-y-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gh-primary">Your OpenPilot History</h2>
-                    <button id="new-issue-button"
-                            class="flex items-center space-x-2 px-3 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
-                        <i data-feather="plus" class="w-5 h-5"></i>
-                        <span>Create New Issue</span>
-                    </button>
-                </div>
+            <div id="issuepilot-view" data-tab-content>
+                <p class="text-gray-500 mt-2 text-lg mb-4">Create GitHub Issues instantly using the API.</p>
                 
-                <div id="issues-loading" class="text-center py-6 hidden">
-                    <i data-feather="loader" class="w-6 h-6 animate-spin mx-auto text-gray-500"></i>
-                    <p class="text-gray-500 mt-2">Loading issues created by OpenPilot...</p>
-                </div>
-                
-                <div id="issues-empty" class="text-center py-6 hidden">
-                    <p class="text-gray-500 italic">No issues found created by OpenPilot.</p>
-                </div>
-                
-                <div id="issues-container" class="space-y-3">
-                </div>
-            </div>
-
-            <form id="issue-form" class="space-y-6 hidden">
-                
-                <div id="repo-input-group">
-                    <label for="repo-input" class="block text-sm font-medium text-gh-primary mb-1">Repository (Owner/Name) <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input type="text" id="repo-input" placeholder="e.g., supabase/supabase" required
-                               class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150"
-                               aria-describedby="repo-help">
-                        <i data-feather="code" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        
-                        <div id="repo-suggestions-container" class="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg hidden">
-                        </div>
-                    </div>
-                    <p id="repo-help" class="mt-1 text-xs text-gray-500">Format: <code>owner/repository-name</code> (must be a repo you have access to)</p>
-                </div>
-
-                <div>
-                    <label for="title-input" class="block text-sm font-medium text-gh-primary mb-1">Issue Title <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input type="text" id="title-input" placeholder="A concise summary of the bug or feature" required
-                               class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
-                        <i data-feather="tag" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    </div>
-                </div>
-
-                <div>
-                    <label for="body-input" class="block text-sm font-medium text-gh-primary mb-1">Issue Body / Description</label>
-                    <div class="relative">
-                        <textarea id="body-input" rows="8" placeholder="Provide context, steps to reproduce, or detailed specifications. (Markdown is supported)"
-                                  class="w-full p-3 pl-3 pr-3 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150"></textarea>
-
-                        <div id="mention-suggestions-container" class="absolute z-20 w-full top-full mt-1 max-h-40 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg hidden">
-                        </div>
-                    </div>
-                    <div class="mt-2 flex justify-between items-center">
-                        <p class="text-xs text-gray-500">Use <code>@username</code> to mention people in the issue.</p>
-                        <button type="button" id="mention-button"
-                                class="flex items-center space-x-1 px-3 py-1 text-xs bg-gray-200 text-gh-dark font-semibold rounded-lg hover:bg-gray-300 transition duration-150">
-                            <i data-feather="at-sign" class="w-3 h-3"></i>
-                            <span>@ Insert Symbol</span>
+                <div id="issues-list-view" class="hidden space-y-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-2xl font-semibold text-gh-primary">Your IssuePilot History</h2>
+                        <button id="new-issue-button"
+                                class="flex items-center space-x-2 px-3 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                            <i data-feather="plus" class="w-5 h-5"></i>
+                            <span>Create New Issue</span>
                         </button>
                     </div>
-                </div>
-                
-                
-
-                <div>
-                    <label for="labels-input" class="block text-sm font-medium text-gh-primary mb-1">Labels (e.g., bug, enhancement, priority:high)</label>
-                    <div class="relative">
-                        <input type="text" id="labels-input" placeholder="Comma-separated list of existing labels"
-                               class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
-                        <i data-feather="tag" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    
+                    <div id="issues-loading" class="text-center py-6 hidden">
+                        <i data-feather="loader" class="w-6 h-6 animate-spin mx-auto text-gray-500"></i>
+                        <p class="text-gray-500 mt-2">Loading issues created by IssuePilot...</p>
+                    </div>
+                    
+                    <div id="issues-empty" class="text-center py-6 hidden">
+                        <p class="text-gray-500 italic">No issues found created by IssuePilot.</p>
+                    </div>
+                    
+                    <div id="issues-container" class="space-y-3">
                     </div>
                 </div>
 
-                <div>
-                    <label for="assignees-input" class="block text-sm font-medium text-gh-primary mb-1">Assignees (GitHub Usernames)</label>
-                    <div class="relative">
-                        <input type="text" id="assignees-input" placeholder="Comma-separated list of usernames"
-                               class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
-                        <i data-feather="user-plus" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <form id="issue-form" class="space-y-6 hidden">
+                    
+                    <div id="repo-input-group">
+                        <label for="repo-input" class="block text-sm font-medium text-gh-primary mb-1">Repository (Owner/Name) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="text" id="repo-input" placeholder="e.g., supabase/supabase" required
+                                   class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150"
+                                   aria-describedby="repo-help">
+                            <i data-feather="code" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                            
+                            <div id="repo-suggestions-container" class="absolute z-10 w-full mt-1 max-h-60 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg hidden">
+                            </div>
+                        </div>
+                        <p id="repo-help" class="mt-1 text-xs text-gray-500">Format: <code>owner/repository-name</code> (must be a repo you have access to)</p>
                     </div>
-                </div>
 
-                <div>
-                    <label for="milestone-input" class="block text-sm font-medium text-gh-primary mb-1">Milestone (Number ID)</label>
-                    <div class="relative">
-                        <input type="number" id="milestone-input" placeholder="e.g., 1 (Must be the milestone's ID number)"
-                               class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
-                        <i data-feather="flag" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <div>
+                        <label for="title-input" class="block text-sm font-medium text-gh-primary mb-1">Issue Title <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <input type="text" id="title-input" placeholder="A concise summary of the bug or feature" required
+                                   class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
+                            <i data-feather="tag" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
                     </div>
-                    <p class="mt-1 text-xs text-gray-500">Enter the numeric ID of an existing milestone in the repository.</p>
-                </div>
 
-                <button type="submit" id="submit-button"
-                        class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150 ease-in-out transform hover:scale-[1.005]">
-                    <i data-feather="send" class="w-5 h-5"></i>
-                    <span>Create Issue via API</span>
-                </button>
-            </form>
+                    <div>
+                        <label for="body-input" class="block text-sm font-medium text-gh-primary mb-1">Issue Body / Description</label>
+                        <div class="relative">
+                            <textarea id="body-input" rows="8" placeholder="Provide context, steps to reproduce, or detailed specifications. (Markdown is supported)"
+                                      class="w-full p-3 pl-3 pr-3 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150"></textarea>
+
+                            <div id="mention-suggestions-container" class="absolute z-20 w-full top-full mt-1 max-h-40 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-lg hidden">
+                            </div>
+                        </div>
+                        <div class="mt-2 flex justify-between items-center">
+                            <p class="text-xs text-gray-500">Use <code>@username</code> to mention people in the issue.</p>
+                            <button type="button" id="mention-button"
+                                    class="flex items-center space-x-1 px-3 py-1 text-xs bg-gray-200 text-gh-dark font-semibold rounded-lg hover:bg-gray-300 transition duration-150">
+                                <i data-feather="at-sign" class="w-3 h-3"></i>
+                                <span>@ Insert Symbol</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    
+
+                    <div>
+                        <label for="labels-input" class="block text-sm font-medium text-gh-primary mb-1">Labels (e.g., bug, enhancement, priority:high)</label>
+                        <div class="relative">
+                            <input type="text" id="labels-input" placeholder="Comma-separated list of existing labels"
+                                   class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
+                            <i data-feather="tag" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="assignees-input" class="block text-sm font-medium text-gh-primary mb-1">Assignees (GitHub Usernames)</label>
+                        <div class="relative">
+                            <input type="text" id="assignees-input" placeholder="Comma-separated list of usernames"
+                                   class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
+                            <i data-feather="user-plus" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="milestone-input" class="block text-sm font-medium text-gh-primary mb-1">Milestone (Number ID)</label>
+                        <div class="relative">
+                            <input type="number" id="milestone-input" placeholder="e.g., 1 (Must be the milestone's ID number)"
+                                   class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:ring-gh-blue focus:border-gh-blue transition duration-150">
+                            <i data-feather="flag" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">Enter the numeric ID of an existing milestone in the repository.</p>
+                    </div>
+
+                    <button type="submit" id="submit-button"
+                            class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150 ease-in-out transform hover:scale-[1.005]">
+                        <i data-feather="send" class="w-5 h-5"></i>
+                        <span>Create Issue via API</span>
+                    </button>
+                </form>
+            </div>
+            
+            <div id="followpilot-view" data-tab-content class="hidden">
+                <div class="text-center py-16 px-4">
+                    <i data-feather="eye" class="w-12 h-12 mx-auto mb-4 text-gray-400"></i>
+                    <h3 class="text-xl font-semibold text-gh-primary mb-2">FollowPilot: Coming Soon</h3>
+                    <p class="text-gray-600">This feature will allow you to track and follow issues created by IssuePilot, providing real-time updates and notifications.</p>
+                    <p class="mt-4 text-sm text-gray-500">Stay tuned for updates!</p>
+                </div>
+            </div>
         </div>
 
         <footer class="mt-8 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
@@ -335,12 +353,11 @@
     </div>
 
     <script type="module">
-        const SUPABASE_URL = 'https://syczfzloslkszzpuvcre.supabase.co';
+        
+        const SUPABASE_URL = 'https://syczfzloslkszzpuvcre.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5Y3pmemxvc2xrc3p6cHV2Y3JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2MTQwMjUsImV4cCI6MjA4MTE5MDAyNX0.vy8urIWxuwuaEYCjfHiWQUyBYKDXdhGiK8X4x_bafrw';
         const APP_SIGNATURE = '';
-        const ISSUE_HISTORY_KEY = 'openpilot_history';
-        const USER_SCOPE = 'user';
-        const REPO_SCOPE = 'public_repo, write:issue';
+        const ISSUE_HISTORY_KEY = 'issuepilot_history';
 
         const form = document.getElementById('issue-form');
         const issuesListView = document.getElementById('issues-list-view');
@@ -356,11 +373,10 @@
         const submitButton = document.getElementById('submit-button');
         const authButton = document.getElementById('auth-button');
         const userProfile = document.getElementById('user-profile');
-        const userName = document.getElementById('user-name');
         const userAvatar = document.getElementById('user-avatar');
+        const userName = document.getElementById('user-name');
         const loadingSpinner = document.getElementById('loading-spinner');
         const authArea = document.getElementById('auth-area');
-        const userStatusRow = document.getElementById('user-status-row'); // New element reference
         const kebabButton = document.getElementById('kebab-button');
         const dropdownMenu = document.getElementById('dropdown-menu');
         const deleteAccountButton = document.getElementById('delete-account-button');
@@ -368,14 +384,12 @@
         const pipModal = document.getElementById('pip-modal');
         const modalYesButton = document.getElementById('modal-yes-button');
         const modalNoButton = document.getElementById('modal-no-button');
-        const kebabMenu = document.getElementById('kebab-menu');
+        const kebabMenu = document.getElementById('kebab-menu'); 
         const labelsInput = document.getElementById('labels-input');
         const assigneesInput = document.getElementById('assignees-input');
         const milestoneInput = document.getElementById('milestone-input');
         const mentionButton = document.getElementById('mention-button');
         const mentionSuggestionsContainer = document.getElementById('mention-suggestions-container');
-        const repoAuthContainer = document.getElementById('repo-auth-container');
-        const repoAuthButton = document.getElementById('repo-auth-button');
         
         const issueModal = document.getElementById('issue-modal');
         const closeModalButton = document.getElementById('close-modal-button');
@@ -390,6 +404,12 @@
         const modalGithubLink = document.getElementById('modal-github-link');
         const helpLink = document.getElementById('help-link');
 
+        // New Tab Variables
+        const tabIssuePilot = document.getElementById('tab-issuepilot');
+        const tabFollowPilot = document.getElementById('tab-followpilot');
+        const issuepilotView = document.getElementById('issuepilot-view');
+        const followpilotView = document.getElementById('followpilot-view');
+
         let currentMentionQuery = '';
         let mentionStartIndex = -1;
         
@@ -397,8 +417,7 @@
 
         let githubAccessToken = null;
         let githubUsername = null;
-        let hasRepoAccess = false;
-        const signInText = 'Connect with GitHub (Basic)';
+        const signInText = 'Connect with GitHub';
         
         let notificationTimeout;
 
@@ -476,7 +495,36 @@
             return newIssue;
         }
 
+        function switchTab(tabId) {
+            document.querySelectorAll('[data-tab-content]').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('text-gh-primary', 'border-gh-blue');
+                button.classList.add('text-gray-500', 'border-transparent', 'hover:border-gray-300', 'hover:text-gray-700');
+                button.removeAttribute('aria-current');
+            });
+
+            const selectedContent = document.getElementById(tabId);
+            if (selectedContent) {
+                selectedContent.classList.remove('hidden');
+            }
+
+            const selectedButton = document.querySelector(`.tab-button[data-target="${tabId}"]`);
+            if (selectedButton) {
+                selectedButton.classList.remove('text-gray-500', 'border-transparent', 'hover:border-gray-300', 'hover:text-gray-700');
+                selectedButton.classList.add('text-gh-primary', 'border-gh-blue');
+                selectedButton.setAttribute('aria-current', 'page');
+            }
+            
+            feather.replace();
+        }
+
         function switchView(view) {
+            // Ensure we are on the IssuePilot tab before switching forms
+            switchTab('issuepilot-view');
+
             if (view === 'list') {
                 issuesListView.classList.remove('hidden');
                 form.classList.add('hidden');
@@ -553,10 +601,6 @@
                 displayRepoMessage('Please sign in to search for repositories and improve rate limits.', 'warning');
                 return;
             }
-            if (!hasRepoAccess) {
-                 displayRepoMessage('Grant repository access to search across all public repositories.', 'warning');
-                 return;
-            }
 
             displayRepoMessage('Searching repositories...', 'info');
 
@@ -583,7 +627,7 @@
                     if (response.status === 403 && data.message && data.message.includes('rate limit')) {
                          errorMessage = 'Rate limit exceeded for repository search. Please try again soon or sign in.';
                     } else if (response.status === 401) {
-                        errorMessage = 'Authentication failed for repository search. Please ensure you have granted repository access.';
+                        errorMessage = 'Authentication failed for repository search. Please sign in again.';
                     }
                     showNotification(errorMessage, 'warning');
                     renderRepoSuggestions(null);
@@ -598,8 +642,8 @@
         }, 400);
         
         async function fetchIssueDetails(issueApiUrl) {
-            if (!githubAccessToken || !hasRepoAccess) {
-                 showNotification('Please grant repository access to view issue details.', 'warning', true);
+            if (!githubAccessToken) {
+                 showNotification('Please sign in to view issue details.', 'warning', true);
                  return;
             }
             
@@ -771,7 +815,7 @@
 
 
         async function fetchUserIssues(username) {
-            if (!username || !githubAccessToken || !hasRepoAccess) {
+            if (!username || !githubAccessToken) {
                 renderIssues(getIssuesFromLocalStorage());
                 return;
             }
@@ -824,37 +868,21 @@
             }
         }
 
-        function getScopeFromSession(session) {
-            const scopeString = session?.user?.user_metadata?.provider_scopes || '';
-            const scopes = scopeString.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            return scopes;
-        }
-
-        function checkRepoAccess(session) {
-            const scopes = getScopeFromSession(session);
-            return scopes.includes('public_repo') && scopes.includes('write:issue');
-        }
-
         function updateUI(session) {
             loadingSpinner.classList.add('hidden');
 
             if (session && session.provider_token) {
-                // SIGNED IN STATE
                 githubAccessToken = session.provider_token;
                 
                 const user = session.user;
                 const userMetadata = user.user_metadata || {};
                 githubUsername = userMetadata.user_name;
-                hasRepoAccess = checkRepoAccess(session);
 
-                userStatusRow.classList.remove('justify-center');
-                userStatusRow.classList.add('justify-between');
+                authArea.classList.remove('justify-center', 'flex-col', 'space-y-3');
+                authArea.classList.add('justify-between', 'flex-row');
 
                 userProfile.classList.remove('hidden');
                 userProfile.classList.add('flex');
-                
-                // Make auth button smaller (Sign Out)
-                authButton.classList.remove('w-full');
                 
                 helpLink.classList.add('hidden');
 
@@ -862,63 +890,50 @@
                 userAvatar.src = userMetadata.avatar_url || 'https://placehold.co/32x32/cccccc/333333?text=U';
                 
                 authButton.innerHTML = `<i data-feather="log-out" class="w-5 h-5"></i><span id="auth-button-text">Sign Out</span>`;
-                authButton.classList.remove('bg-gh-blue');
-                authButton.classList.add('bg-gray-400', 'hover:bg-gray-500'); 
+                authButton.classList.remove('bg-red-500');
+                authButton.classList.add('bg-gh-blue', 'sm:text-white'); 
                 
-                dropdownMenu.classList.add('hidden'); 
+                kebabButton.classList.remove('hidden');
+
+                showNotification(`Logged in as ${userName.textContent}. Loading your issue history...`, 'success');
                 
-                
-                if (hasRepoAccess) {
-                    // FULL ACCESS
-                    showNotification(`Logged in as ${userName.textContent} with full access. Loading history...`, 'success', true);
-                    repoAuthContainer.classList.add('hidden');
-                    switchView('list');
-                    fetchUserIssues(githubUsername);
-                } else {
-                    // BASIC ACCESS
-                    showNotification(`Logged in as ${userName.textContent} (Basic). Grant repository access to create and view issues.`, 'warning', true);
-                    repoAuthContainer.classList.remove('hidden');
-                    repoAuthContainer.classList.add('flex');
-                    issuesListView.classList.add('hidden');
-                    form.classList.add('hidden');
-                }
+                switchView('list');
+                fetchUserIssues(githubUsername);
 
 
             } else {
-                // SIGNED OUT STATE
                 githubAccessToken = null;
                 githubUsername = null;
-                hasRepoAccess = false;
 
-                userStatusRow.classList.remove('justify-between');
-                userStatusRow.classList.add('justify-center');
+                authArea.classList.remove('justify-between', 'flex-row');
+                authArea.classList.add('justify-center', 'flex-col', 'space-y-3');
 
                 userProfile.classList.add('hidden');
                 userProfile.classList.remove('flex');
                 issuesListView.classList.add('hidden');
                 form.classList.add('hidden');
-                repoAuthContainer.classList.add('hidden');
                 
                 helpLink.classList.remove('hidden');
                 
-                // Make auth button full width (Connect Basic)
-                authButton.classList.add('w-full');
                 authButton.innerHTML = `<i data-feather="github" class="w-5 h-5"></i><span id="auth-button-text">${signInText}</span>`;
-                authButton.classList.remove('bg-gray-400', 'hover:bg-gray-500');
+                authButton.classList.remove('bg-red-500');
                 authButton.classList.add('bg-gh-blue');
                 
                 dropdownMenu.classList.add('hidden');
                 
-                showNotification('Please sign in with GitHub (Basic) to begin.', 'warning', true);
+                showNotification('Please sign in with GitHub to create issues via the API.', 'warning', true);
+
+                // Default to IssuePilot tab view
+                switchTab('issuepilot-view');
             }
             feather.replace();
         }
 
-        async function signInWithGitHub(scopes) {
+        async function signInWithGitHub() {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'github',
                 options: {
-                    scopes: scopes, 
+                    scopes: 'public_repo, write:issue', 
                 }
             });
 
@@ -1101,8 +1116,8 @@
         async function createIssue(event) {
             event.preventDefault();
             
-            if (!githubAccessToken || !githubUsername || !hasRepoAccess) {
-                showNotification('You must grant repository access to create an issue.', 'error', true);
+            if (!githubAccessToken || !githubUsername) {
+                showNotification('You must be signed in to create an issue.', 'error', true);
                 return;
             }
 
@@ -1222,13 +1237,7 @@
                 if (githubAccessToken) {
                     signOut();
                 } else {
-                    signInWithGitHub(USER_SCOPE); 
-                }
-            });
-            
-            repoAuthButton.addEventListener('click', () => {
-                if (githubAccessToken) {
-                    signInWithGitHub(REPO_SCOPE); 
+                    signInWithGitHub();
                 }
             });
 
@@ -1252,10 +1261,6 @@
             });
 
             mentionButton.addEventListener('click', () => {
-                if (!hasRepoAccess) {
-                    showNotification('You must grant repository access to mention users.', 'warning');
-                    return;
-                }
                 insertAtCursor(bodyInput, '@');
                 bodyInput.focus(); 
             });
@@ -1277,10 +1282,6 @@
             });
 
             newIssueButton.addEventListener('click', () => {
-                if (!hasRepoAccess) {
-                    showNotification('You must grant repository access to create new issues.', 'warning');
-                    return;
-                }
                 switchView('form');
             });
 
@@ -1308,6 +1309,23 @@
                     repoSuggestionsContainer.classList.remove('hidden');
                 }
             });
+
+            // Tab Event Listeners
+            tabIssuePilot.addEventListener('click', () => {
+                switchTab('issuepilot-view');
+                if (githubAccessToken) {
+                    switchView('list'); // Show list view if signed in
+                } else {
+                    // Hide sub-views if signed out
+                    issuesListView.classList.add('hidden');
+                    form.classList.add('hidden');
+                }
+            });
+
+            tabFollowPilot.addEventListener('click', () => {
+                switchTab('followpilot-view');
+            });
+
 
             supabase.auth.getSession().then(({ data: { session } }) => {
                 updateUI(session);
