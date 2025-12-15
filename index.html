@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IssuePilot - Create GitHub Issues Instantly</title>
+    <title>OpenPilot - Create GitHub Issues Instantly</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -71,7 +71,7 @@
         <header class="text-center mb-8">
             <div class="flex items-center justify-center space-x-2 text-gh-primary">
                 <i data-feather="github" class="w-8 h-8 text-gh-dark"></i>
-                <h1 class="text-3xl font-extrabold tracking-tight">IssuePilot</h1>
+                <h1 class="text-3xl font-extrabold tracking-tight">OpenPilot</h1>
             </div>
             <p class="text-gray-500 mt-2 text-lg">Create GitHub Issues instantly using the API.</p>
         </header>
@@ -97,12 +97,22 @@
                     </div>
                 </div>
             </div>
+            
             <button id="auth-button"
                     class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
                 <i data-feather="github" class="w-5 h-5"></i>
                 <span id="auth-button-text">Connect with GitHub</span>
             </button>
             
+            <div id="repo-auth-container" class="w-full sm:w-auto hidden flex-col items-center space-y-3">
+                <p class="text-sm text-gray-700 font-medium">To create and view issues, we need repository access:</p>
+                <button id="repo-auth-button"
+                        class="w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2 bg-gh-success text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
+                    <i data-feather="lock" class="w-5 h-5"></i>
+                    <span>Grant Repository Access</span>
+                </button>
+            </div>
+
             <a id="help-link" href="/docs#linking" 
                class="flex items-center space-x-1 text-sm text-gray-500 hover:text-gh-blue transition duration-150">
                 <i data-feather="external-link" class="w-4 h-4"></i>
@@ -119,7 +129,7 @@
             
             <div id="issues-list-view" class="hidden space-y-4">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gh-primary">Your IssuePilot History</h2>
+                    <h2 class="text-2xl font-semibold text-gh-primary">Your OpenPilot History</h2>
                     <button id="new-issue-button"
                             class="flex items-center space-x-2 px-3 py-2 bg-gh-blue text-white font-semibold rounded-lg shadow-md hover:bg-opacity-90 transition duration-150">
                         <i data-feather="plus" class="w-5 h-5"></i>
@@ -129,11 +139,11 @@
                 
                 <div id="issues-loading" class="text-center py-6 hidden">
                     <i data-feather="loader" class="w-6 h-6 animate-spin mx-auto text-gray-500"></i>
-                    <p class="text-gray-500 mt-2">Loading issues created by IssuePilot...</p>
+                    <p class="text-gray-500 mt-2">Loading issues created by OpenPilot...</p>
                 </div>
                 
                 <div id="issues-empty" class="text-center py-6 hidden">
-                    <p class="text-gray-500 italic">No issues found created by IssuePilot.</p>
+                    <p class="text-gray-500 italic">No issues found created by OpenPilot.</p>
                 </div>
                 
                 <div id="issues-container" class="space-y-3">
@@ -322,11 +332,12 @@
     </div>
 
     <script type="module">
-        
-        const SUPABASE_URL = 'https://syczfzloslkszzpuvcre.supabase.co'; 
+        const SUPABASE_URL = 'https://syczfzloslkszzpuvcre.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5Y3pmemxvc2xrc3p6cHV2Y3JlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2MTQwMjUsImV4cCI6MjA4MTE5MDAyNX0.vy8urIWxuwuaEYCjfHiWQUyBYKDXdhGiK8X4x_bafrw';
         const APP_SIGNATURE = '';
-        const ISSUE_HISTORY_KEY = 'issuepilot_history';
+        const ISSUE_HISTORY_KEY = 'openpilot_history';
+        const USER_SCOPE = 'user';
+        const REPO_SCOPE = 'public_repo, write:issue';
 
         const form = document.getElementById('issue-form');
         const issuesListView = document.getElementById('issues-list-view');
@@ -353,12 +364,14 @@
         const pipModal = document.getElementById('pip-modal');
         const modalYesButton = document.getElementById('modal-yes-button');
         const modalNoButton = document.getElementById('modal-no-button');
-        const kebabMenu = document.getElementById('kebab-menu'); 
+        const kebabMenu = document.getElementById('kebab-menu');
         const labelsInput = document.getElementById('labels-input');
         const assigneesInput = document.getElementById('assignees-input');
         const milestoneInput = document.getElementById('milestone-input');
         const mentionButton = document.getElementById('mention-button');
         const mentionSuggestionsContainer = document.getElementById('mention-suggestions-container');
+        const repoAuthContainer = document.getElementById('repo-auth-container');
+        const repoAuthButton = document.getElementById('repo-auth-button');
         
         const issueModal = document.getElementById('issue-modal');
         const closeModalButton = document.getElementById('close-modal-button');
@@ -380,7 +393,8 @@
 
         let githubAccessToken = null;
         let githubUsername = null;
-        const signInText = 'Connect with GitHub';
+        let hasRepoAccess = false;
+        const signInText = 'Connect with GitHub (Basic)';
         
         let notificationTimeout;
 
@@ -535,6 +549,10 @@
                 displayRepoMessage('Please sign in to search for repositories and improve rate limits.', 'warning');
                 return;
             }
+            if (!hasRepoAccess) {
+                 displayRepoMessage('Grant repository access to search across all public repositories.', 'warning');
+                 return;
+            }
 
             displayRepoMessage('Searching repositories...', 'info');
 
@@ -561,7 +579,7 @@
                     if (response.status === 403 && data.message && data.message.includes('rate limit')) {
                          errorMessage = 'Rate limit exceeded for repository search. Please try again soon or sign in.';
                     } else if (response.status === 401) {
-                        errorMessage = 'Authentication failed for repository search. Please sign in again.';
+                        errorMessage = 'Authentication failed for repository search. Please ensure you have granted repository access.';
                     }
                     showNotification(errorMessage, 'warning');
                     renderRepoSuggestions(null);
@@ -576,8 +594,8 @@
         }, 400);
         
         async function fetchIssueDetails(issueApiUrl) {
-            if (!githubAccessToken) {
-                 showNotification('Please sign in to view issue details.', 'warning', true);
+            if (!githubAccessToken || !hasRepoAccess) {
+                 showNotification('Please grant repository access to view issue details.', 'warning', true);
                  return;
             }
             
@@ -749,7 +767,7 @@
 
 
         async function fetchUserIssues(username) {
-            if (!username || !githubAccessToken) {
+            if (!username || !githubAccessToken || !hasRepoAccess) {
                 renderIssues(getIssuesFromLocalStorage());
                 return;
             }
@@ -802,6 +820,17 @@
             }
         }
 
+        function getScopeFromSession(session) {
+            const scopeString = session?.user?.user_metadata?.provider_scopes || '';
+            const scopes = scopeString.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            return scopes;
+        }
+
+        function checkRepoAccess(session) {
+            const scopes = getScopeFromSession(session);
+            return scopes.includes('public_repo') && scopes.includes('write:issue');
+        }
+
         function updateUI(session) {
             loadingSpinner.classList.add('hidden');
 
@@ -811,6 +840,7 @@
                 const user = session.user;
                 const userMetadata = user.user_metadata || {};
                 githubUsername = userMetadata.user_name;
+                hasRepoAccess = checkRepoAccess(session);
 
                 authArea.classList.remove('justify-center', 'flex-col', 'space-y-3');
                 authArea.classList.add('justify-between', 'flex-row');
@@ -824,20 +854,31 @@
                 userAvatar.src = userMetadata.avatar_url || 'https://placehold.co/32x32/cccccc/333333?text=U';
                 
                 authButton.innerHTML = `<i data-feather="log-out" class="w-5 h-5"></i><span id="auth-button-text">Sign Out</span>`;
-                authButton.classList.remove('bg-red-500');
-                authButton.classList.add('bg-gh-blue', 'sm:text-white'); 
+                authButton.classList.remove('bg-gh-blue');
+                authButton.classList.add('bg-gray-400', 'sm:text-white', 'hover:bg-gray-500'); 
                 
                 kebabButton.classList.remove('hidden');
-
-                showNotification(`Logged in as ${userName.textContent}. Loading your issue history...`, 'success');
+                repoAuthContainer.classList.add('hidden'); 
                 
-                switchView('list');
-                fetchUserIssues(githubUsername);
+                
+                if (hasRepoAccess) {
+                    showNotification(`Logged in as ${userName.textContent} with full access. Loading history...`, 'success');
+                    repoAuthContainer.classList.add('hidden');
+                    switchView('list');
+                    fetchUserIssues(githubUsername);
+                } else {
+                    showNotification(`Logged in as ${userName.textContent} (Basic). Grant repository access to create and view issues.`, 'warning', true);
+                    repoAuthContainer.classList.remove('hidden');
+                    repoAuthContainer.classList.add('flex');
+                    issuesListView.classList.add('hidden');
+                    form.classList.add('hidden');
+                }
 
 
             } else {
                 githubAccessToken = null;
                 githubUsername = null;
+                hasRepoAccess = false;
 
                 authArea.classList.remove('justify-between', 'flex-row');
                 authArea.classList.add('justify-center', 'flex-col', 'space-y-3');
@@ -846,25 +887,26 @@
                 userProfile.classList.remove('flex');
                 issuesListView.classList.add('hidden');
                 form.classList.add('hidden');
+                repoAuthContainer.classList.add('hidden');
                 
                 helpLink.classList.remove('hidden');
                 
                 authButton.innerHTML = `<i data-feather="github" class="w-5 h-5"></i><span id="auth-button-text">${signInText}</span>`;
-                authButton.classList.remove('bg-red-500');
+                authButton.classList.remove('bg-gray-400', 'hover:bg-gray-500');
                 authButton.classList.add('bg-gh-blue');
                 
                 dropdownMenu.classList.add('hidden');
                 
-                showNotification('Please sign in with GitHub to create issues via the API.', 'warning', true);
+                showNotification('Please sign in with GitHub (Basic) to begin.', 'warning', true);
             }
             feather.replace();
         }
 
-        async function signInWithGitHub() {
+        async function signInWithGitHub(scopes) {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'github',
                 options: {
-                    scopes: 'public_repo, write:issue', 
+                    scopes: scopes, 
                 }
             });
 
@@ -1047,8 +1089,8 @@
         async function createIssue(event) {
             event.preventDefault();
             
-            if (!githubAccessToken || !githubUsername) {
-                showNotification('You must be signed in to create an issue.', 'error', true);
+            if (!githubAccessToken || !githubUsername || !hasRepoAccess) {
+                showNotification('You must grant repository access to create an issue.', 'error', true);
                 return;
             }
 
@@ -1168,7 +1210,13 @@
                 if (githubAccessToken) {
                     signOut();
                 } else {
-                    signInWithGitHub();
+                    signInWithGitHub(USER_SCOPE); 
+                }
+            });
+            
+            repoAuthButton.addEventListener('click', () => {
+                if (githubAccessToken) {
+                    signInWithGitHub(REPO_SCOPE); 
                 }
             });
 
@@ -1192,6 +1240,10 @@
             });
 
             mentionButton.addEventListener('click', () => {
+                if (!hasRepoAccess) {
+                    showNotification('You must grant repository access to mention users.', 'warning');
+                    return;
+                }
                 insertAtCursor(bodyInput, '@');
                 bodyInput.focus(); 
             });
@@ -1213,6 +1265,10 @@
             });
 
             newIssueButton.addEventListener('click', () => {
+                if (!hasRepoAccess) {
+                    showNotification('You must grant repository access to create new issues.', 'warning');
+                    return;
+                }
                 switchView('form');
             });
 
